@@ -889,13 +889,6 @@ ifeq ($(TARGET_ARCH),arm)
 	LOCAL_NO_CRT := true
 	LOCAL_CFLAGS += -DCRT_LEGACY_WORKAROUND
 
-	ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
-        LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
-        ifeq ($(TARGET_ARCH_VARIANT),armv6-vfp)
-            LOCAL_ARM_MODE := arm
-        endif
-    endif
-
 	LOCAL_SRC_FILES := \
 		arch-arm/bionic/crtbegin_so.c \
 		arch-arm/bionic/atexit_legacy.c \
@@ -906,6 +899,17 @@ endif
 LOCAL_MODULE:= libc
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 LOCAL_REQUIRED_MODULES := tzdata
+
+ifeq ($(TARGET_ARCH),arm)
+
+    ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
+        LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+        ifeq ($(TARGET_ARCH_VARIANT),armv6-vfp)
+            LOCAL_ARM_MODE := arm
+        endif
+    endif
+    
+endif
 
 # WARNING: The only library libc.so should depend on is libdl.so!  If you add other libraries,
 # make sure to add -Wl,--exclude-libs=libgcc.a to the LOCAL_LDFLAGS for those libraries.  This
